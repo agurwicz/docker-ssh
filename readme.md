@@ -12,12 +12,23 @@
   - [SSH Tunnel](#ssh-tunnel)
   - [IDE Configuration](#ide-configuration)
     - [PyCharm](#pycharm)
-  
+- [Troubleshooting](#troubleshooting)
+
 ## Motivation
 
 This project was born from the need to locally debug code that is being run inside a Docker container, which is running in a node requested via `qsub` from a GPU cluster, accessed via SSH.
 
 ## Usage
+
+- The [SSH Key Creation](#ssh-key-creation) step only needs to be done once per user.
+- The [Docker Image Creation](#docker-image-creation) step needs to be done once per Docker image to be created by the user. 
+  - The `ssh_dockerfile.sh` file can also be modified as to include other commands, appending to the base image content.
+- The [Docker Container Creation](#docker-container-creation) step should be done once per coding session, as to avoid holding cluster resources (requested via `qsub`). 
+  - When finished, the container needs to be stopped and removed. To do so, run `docker rm -f <container_name>`.
+- The [SSH Tunnel](#ssh-tunnel) step needs to be done before every coding session.
+  - When finished, the SSH credentials in the local machine need to be removed, in order to avoid problems when connecting again from the same port. To do so, run `ssh-keygen -R [127.0.0.1]:<port>` in the local machine.
+- The [IDE Configuration](#ide-configuration) step should be done once per coding session.
+  - With the [PyCharm](#pycharm) IDE, when finished, the remote interpreter and deployment configurations should be removed. This avoids problems when connecting again from the same port.
 
 ### SSH Key Creation
 
@@ -28,8 +39,7 @@ This project was born from the need to locally debug code that is being run insi
   ssh-keygen
   ``` 
   
-  When prompted, choose the full path, and the optional passphrase, of the key to be created. 
-  This creates a pair of keys, a private and a public one.
+  When prompted, choose the full path, and the optional passphrase, of the key to be created. This creates a pair of keys, a private and a public one.
    
 - Add the public key to the user's set of authorized keys, with the following command:
 
@@ -58,13 +68,11 @@ This project was born from the need to locally debug code that is being run insi
   - `<image_name>`: `${USER}/ssh:latest`
   - `<dockerfile_path>`: `./ssh_dockerfile.sh`    
 
-- The image is now created. 
-To confirm, run `docker image list | grep <image_name>`.
+- The image is now created. To confirm, run `docker image list | grep <image_name>`.
   
 ### Docker Container Creation   
 
-**These steps need to be done in the node while accessed via `qsub`**.
-Make sure to keep the connection alive while using the container here, or elsewhere.
+**These steps need to be done in the node while accessed via `qsub`**. Make sure to keep the connection alive while using the container here, or elsewhere.
 
 - Copy the `scripts/create_container.sh` file to the cluster.
 - Run the script, passing the required arguments, with the following default values:
@@ -83,12 +91,6 @@ Make sure to keep the connection alive while using the container here, or elsewh
   - `docker exec -it <container_name> /bin/bash`  
     or  
   - `ssh -p <port> -i "<path_to_ssh_key>" ${USER}@127.0.0.1`
-
-- Each time a new container is created, the old SSH credentials in the local machine need to be removed. To do so, run the following command in the local machine:
-
-  ```
-  ssh-keygen -R [127.0.0.1]:<port>
-  ```
 
 ### SSH Tunnel
 
@@ -123,3 +125,13 @@ Make sure to keep the connection alive while using the container here, or elsewh
 - In `Key pair`, fill the path to the SSH key in the local machine.
 - In `Interpreter`, set the path for the Python interpreter in the Docker container (if unknown, run `which python` or `which python3` in the Docker container).
 - This creates a new remote interpreter and deployment configuration, with the project directory mapped to a temporary random directory in the Docker container, automatically updated when the files are modified in PyCharm.
+
+## Troubleshooting
+
+- **SSH connection attempt ignoring key and asking for password:**  
+  
+  Most likely, the problem lies in the permissions for the files in the container user's `.ssh` directory. Try running the following command, from inside the Docker container:
+  
+  ```
+  chmod 600 ~/.ssh/*
+  ```
