@@ -19,5 +19,5 @@ rem IP or name of the cluster
 set remote_ip=%6
 
 call ^
-ssh -L %port%:127.0.0.1:%port% -i "%local_key_path%" "%user%"@"%remote_ip%" ^
+ssh -t -L %port%:127.0.0.1:%port% -i "%local_key_path%" "%user%"@"%remote_ip%" ^
 ssh -L %port%:127.0.0.1:%port% -i "%remote_key_path%" "%user%"@"%node_ip%"

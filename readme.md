@@ -111,7 +111,7 @@ This project was born from the need to locally debug code that is being run insi
   This script can be edited as to substitute the passing of arguments for fixed ones inside it.
 
 - This creates the SSH tunnel, connecting the local machine to the running container. To confirm, in another terminal, run `ssh -p <port> -i "<path_to_ssh_key>" <user>@127.0.0.1`.  
-- To close the connection, press `Ctrl+C`.
+- To close the connection, run `exit`.
 
 ### IDE Configuration
 
