@@ -135,3 +135,7 @@ This project was born from the need to locally debug code that is being run insi
   ```
   chmod 600 ~/.ssh/*
   ```
+
+- **SSH connection attempt saying permissions are too open:**  
+  
+  The SSH key in the local machine should be in a directory accessible only by the user. Try moving the key to `%userprofile%\.ssh`.
