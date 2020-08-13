@@ -126,6 +126,21 @@ This project was born from the need to locally debug code that is being run insi
 - In `Interpreter`, set the path for the Python interpreter in the Docker container (if unknown, run `which python` or `which python3` in the Docker container).
 - This creates a new remote interpreter and deployment configuration, with the project directory mapped to a temporary random directory in the Docker container, automatically updated when the files are modified in PyCharm.
 
+#### Visual Studio Code
+
+- In `View > Extensions`, search for `Remote - SSH` and install the one published by Microsoft. Also available [online](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh).
+- A green rectangle, with a logo resembling `><`, should appear in the lower left corner.
+- In `>< > Remote-SSH: Connect to Host... > Add New SSH Host...`, fill the following:
+  
+  ```
+  ssh -p <port> -i "<path_to_ssh_key>" <user>@127.0.0.1
+  ```
+ 
+- Choose a `config` file to keep the configurations saved.
+- In `>< > Remote-SSH: Connect to Host...`, select `127.0.0.1`.
+- In `File > Open Folder...`, choose the location of the code directory in the Docker container.
+- In the lower left corner, select `Python` to choose the Python interpreter path in the Docker container.
+
 ## Troubleshooting
 
 - **SSH connection attempt ignoring key and asking for password:**  
@@ -139,3 +154,11 @@ This project was born from the need to locally debug code that is being run insi
 - **SSH connection attempt saying permissions are too open:**  
   
   The SSH key in the local machine should be in a directory accessible only by the user. Try moving the key to `%userprofile%\.ssh`.
+
+- **IDE SSH connection error:**
+
+  Check if there are no previous saved credentials for the port before attempting a new connection. Try running the following command, from the local machine:
+  
+  ```
+  ssh-keygen -R [127.0.0.1]:<port>
+  ```
