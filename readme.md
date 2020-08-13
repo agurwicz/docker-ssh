@@ -12,6 +12,7 @@
   - [SSH Tunnel](#ssh-tunnel)
   - [IDE Configuration](#ide-configuration)
     - [PyCharm](#pycharm)
+    - [Visual Studio Code](#visual-studio-code)
 - [Troubleshooting](#troubleshooting)
 
 ## Motivation
